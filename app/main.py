@@ -1,8 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
-from core.config import settings 
+from app.config import settings 
 from sqlalchemy.orm import Session
-from app.db import engine, SessionLocal
-from base import Base, users, blog_post
+from app.db import engine, SessionLocal, Base
 from typing import Generator, List
 from app import crud, schemas
 from fastapi.responses import FileResponse
