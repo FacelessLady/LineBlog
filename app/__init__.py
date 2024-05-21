@@ -1,1 +1,1 @@
-# Empty file to mark the directory as a package
+# Пустой файл, чтобы пометить каталог как пакет.

@@ -12,3 +12,4 @@ class Blog(Base):
     created_at = Column("Создано в", DateTime, default=datetime.now),
     is_active = Column("Активен", Boolean, default=False)
     
+    
