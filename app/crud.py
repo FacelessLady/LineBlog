@@ -1,12 +1,7 @@
 from sqlalchemy.orm import Session
 from app import schemas
 from app.models import blog_post
-from models import users
-
-from sqlalchemy.orm import Session
-from app import schemas
-from app.models import blog_post
-from models import users
+from app.models import users
 
 # User CRUD Operations
 

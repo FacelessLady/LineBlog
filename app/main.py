@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from app.config import settings 
 from app.db import engine, SessionLocal, Base
-from typing import Generator
 from fastapi.responses import FileResponse
 from datetime import datetime
 import uvicorn
@@ -17,13 +16,6 @@ def start_application():
     return app    
 
 app = start_application()
-
-def get_db() -> Generator: 
-    try:
-        db=SessionLocal()
-        yield db
-    finally:
-        db.close()
 
 app.include_router(router)
 
