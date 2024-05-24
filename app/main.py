@@ -1,26 +1,19 @@
 from fastapi import FastAPI
-from app.config import settings 
-from app.db import engine, SessionLocal, Base
-from fastapi.responses import FileResponse
+from app.config import settings
+from app.database import create_tables
+from app.router_users import router as users_router
 from datetime import datetime
-import uvicorn
-from app.router_users import router
-
-def create_tables():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
 
 def start_application():
-    app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
-    create_tables()
+    app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+    app.include_router(users_router)
     return app    
 
 app = start_application()
 
-app.include_router(router)
-
 @app.on_event("startup")
 def on_startup():
+    create_tables()
     with open("log_p.txt", mode="a") as log:
         log.write(f'{datetime.utcnow()}: Begin\n')
 
@@ -31,7 +24,4 @@ def shutdown():
 
 @app.get("/")
 def main():
-    return FileResponse("files/index.html")
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    return {"message": "Hello, World!"}

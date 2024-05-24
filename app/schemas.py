@@ -1,48 +1,52 @@
 from pydantic import BaseModel
 from typing import List, Optional
-import datetime
+from datetime import datetime
 
-#базовая модель для блога
+# Базовая модель для блога
 class BlogBase(BaseModel):
     title: str
     content: str
-    is_active: bool = False
+    is_active: Optional[bool] = True
 
-#модель для создания нового блога
+# Модель для создания нового блога
 class BlogCreate(BlogBase):
     pass
 
-#модель для обновления существующего блога
+# Модель для обновления существующего блога
 class BlogUpdate(BlogBase):
-    pass
-
-#модель для представления блога
-class Blog(BlogBase):
-    id: int
     author_id: int
-    created_at: datetime.datetime
 
     class Config:
         orm_mode = True
 
-#базовая модель для пользователя
+# Модель для представления блога
+class Blog(BlogBase):
+    id: int
+    author_id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+# Базовая модель для пользователя
 class UserBase(BaseModel):
     name: str
     email: str
-    is_active: bool = True
 
-#модель для создания нового пользователя
+# Модель для создания нового пользователя
 class UserCreate(UserBase):
     password: str
 
-#модель для обновления существующего пользователя
+# Модель для обновления существующего пользователя
 class UserUpdate(UserBase):
-    password: Optional[str] = None
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
 
-#модель для представления пользователя
+# Модель для представления пользователя
 class User(UserBase):
     id: int
-    is_superuser: bool = False
+    is_active: bool
+    is_superuser: bool
     blogs: List[Blog] = []
 
     class Config:

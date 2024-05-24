@@ -1,36 +1,36 @@
 from sqlalchemy.orm import Session
 from app import schemas
-from app.models import blog_post
-from app.models import users
+from app import models
 
 # User CRUD Operations
 
 #Получаем пользователя по его идентификатору в базе данных.
 def get_user(db: Session, user_id: int):
-    return db.query(users.User).filter(users.User.id == user_id).first()
+    return db.query(models.User).filter(models.User.id == user_id).first()
 
 #Получаем пользователя по его электронной почте.
 def get_user_by_email(db: Session, email: str):
-    return db.query(users.User).filter(users.User.email == email).first()
+    return db.query(models.User).filter(models.User.email == email).first()
+
+#Возвращаем список пользователей с возможностью задать смещение и ограничение количества возвращаемых записей.
+def get_users(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.User).offset(skip).limit(limit).all()
 
 #Создаем нового пользователя с указанными данными.
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password + "notreallyhashed"
-    db_user = users.User(email=user.email, hashed_password=fake_hashed_password, name=user.name)
+    db_user = models.User(email=user.email, hashed_password=fake_hashed_password, name=user.name)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
-#Возвращаем список пользователей с возможностью задать смещение и ограничение количества возвращаемых записей.
-def get_users(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(users.User).offset(skip).limit(limit).all()
-
 #Обновляем данные пользователя.
 def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
-    db_user = get_user(db, user_id)
+    db_user = get_user(db, user_id=user_id)
     if db_user:
-        for key, value in user.dict(exclude_unset=True).items():
+        update_data = user.dict(exclude_unset=True)
+        for key, value in update_data.items():
             setattr(db_user, key, value)
         db.commit()
         db.refresh(db_user)
@@ -42,7 +42,7 @@ def patch_user(db: Session, user_id: int, user: schemas.UserUpdate):
 
 #Удаляем пользователя из базы данных.
 def delete_user(db: Session, user_id: int):
-    db_user = get_user(db, user_id)
+    db_user = get_user(db, user_id=user_id)
     if db_user:
         db.delete(db_user)
         db.commit()
@@ -52,11 +52,11 @@ def delete_user(db: Session, user_id: int):
 
 #Получаем блог по его идентификатору и идентификатору автора.
 def get_blog(db: Session, blog_id: int, user_id: int):
-    return db.query(blog_post.Blog).filter(blog_post.Blog.id == blog_id, blog_post.Blog.author_id == user_id).first()
+    return db.query(models.Blog).filter(models.Blog.id == blog_id, models.Blog.author_id == user_id).first()
 
 #Создаем новый блог с указанными данными и идентификатором автора.
 def create_blog(db: Session, blog: schemas.BlogCreate, user_id: int):
-    db_blog = blog_post.Blog(**blog.dict(), author_id=user_id)
+    db_blog = models.Blog(**blog.dict(), author_id=user_id)
     db.add(db_blog)
     db.commit()
     db.refresh(db_blog)
@@ -64,13 +64,14 @@ def create_blog(db: Session, blog: schemas.BlogCreate, user_id: int):
 
 #Возвращаем список блогов, принадлежащих определенному пользователю, с возможностью задать смещение и ограничение количества возвращаемых записей.
 def get_blogs_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 10):
-    return db.query(blog_post.Blog).filter(blog_post.Blog.author_id == user_id).offset(skip).limit(limit).all()
+    return db.query(models.Blog).filter(models.Blog.author_id == user_id).offset(skip).limit(limit).all()
 
 #Обновляем данные блога.
 def update_blog(db: Session, blog_id: int, blog: schemas.BlogUpdate):
-    db_blog = get_blog(db, blog_id, blog.author_id)
+    db_blog = get_blog(db, blog_id=blog_id, user_id=blog.author_id)
     if db_blog:
-        for key, value in blog.dict(exclude_unset=True).items():
+        update_data = blog.dict(exclude_unset=True)
+        for key, value in update_data.items():
             setattr(db_blog, key, value)
         db.commit()
         db.refresh(db_blog)
@@ -82,7 +83,7 @@ def patch_blog(db: Session, blog_id: int, blog: schemas.BlogUpdate):
 
 #Удаляем блог из базы данных.
 def delete_blog(db: Session, blog_id: int, user_id: int):
-    db_blog = get_blog(db, blog_id, user_id)
+    db_blog = get_blog(db, blog_id=blog_id, user_id=user_id)
     if db_blog:
         db.delete(db_blog)
         db.commit()
