@@ -4,6 +4,7 @@ from typing import List
 from app import crud, schemas
 from app.database import SessionLocal
 
+
 router = APIRouter(prefix="/users", tags=["users"])
 
 def get_session():

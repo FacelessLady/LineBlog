@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Форма аутентификации</title>
-    <link rel="stylesheet" type="text/css" href="/app/static/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
 </head>
-
 <body>
     <form action="/register" method="post">
-        <!-- label(метка) устанавливает связь между меткой-текстом(<input>).Помогает изменять элементы формы с помощью щелчка мыши-->
         <label for="name">Имя пользователя:</label>
         <input type="text" id="name" name="name" required><br><br>
 
@@ -21,15 +18,6 @@
         <button type="submit">Зарегистрироваться</button>
     </form>
 
-    <button onclick="resetForm()">Сбросить форму</button>
-
-    <script>
-        // Функция сброса формы
-        function resetForm() {
-            document.querySelector("form").reset();
-        }
-  
-    </script>
+    <script src="/static/js/script.js"></script>
 </body>
-
 </html>

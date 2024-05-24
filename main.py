@@ -33,10 +33,6 @@ def shutdown():
     with open("log_p.txt", mode="a") as log:
         log.write(f'{datetime.utcnow()}: End\n')
 
-@app.get("/")
-def main():
-    return {"message": "Hello, World!"}
-
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
